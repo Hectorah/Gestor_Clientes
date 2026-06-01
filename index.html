@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-indigo-950 { background-color: #1A237E; }
+        .text-indigo-950 { color: #1A237E; }
+        .border-indigo-950 { border-color: #1A237E; }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <!-- Header / Logo Area -->
+        <div class="bg-indigo-950 p-8 text-center">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full mb-4 shadow-lg overflow-hidden">
+                <img src="assets/logo/logo.png" alt="Logo HH" class="w-20 h-20 object-contain">
+            </div>
+            <h1 class="text-white text-xl font-bold tracking-tight">SEGUROS HORIZONTES</h1>
+            <p class="text-indigo-200 text-sm mt-1">Registro de Atención</p>
+        </div>
+
+        <!-- Form Area -->
+        <div class="p-8">
+            <form id="qrForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Cédula de Identidad</label>
+                    <input type="text" id="cedula" required 
+                        minlength="6" maxlength="12" 
+                        pattern="^[VvEeJjGgPpxX]-\d{5,10}$|^[0-9]{6,10}$"
+                        title="Formato sugerido: V-12345678 o solo números (6-10 dígitos)"
+                        placeholder="V-00000000"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-950 focus:border-transparent outline-none transition-all text-gray-700 uppercase">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Nombre Completo</label>
+                    <input type="text" id="nombre" required 
+                        minlength="3" maxlength="50"
+                        pattern="^[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+$"
+                        title="Ingrese solo letras y espacios (mínimo 3 caracteres)"
+                        placeholder="Ej. JUAN PÉREZ"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-950 focus:border-transparent outline-none transition-all text-gray-700 uppercase">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Departamento de Destino</label>
+                    <input type="text" id="departamento" required 
+                        minlength="2" maxlength="30"
+                        placeholder="Ej. VENTAS / RRHH"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-950 focus:border-transparent outline-none transition-all text-gray-700 uppercase">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-indigo-950 hover:bg-indigo-900 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all mt-4">
+                    REGISTRAR
+                </button>
+            </form>
+
+            <!-- QR Result Area (Hidden by default) -->
+            <div id="qrResult" class="hidden mt-8 text-center animate-fade-in">
+                <div class="p-4 bg-white border-2 border-dashed border-gray-200 rounded-2xl inline-block mx-auto mb-4">
+                    <div id="qrcode"></div>
+                </div>
+                <p class="text-gray-500 text-sm mb-4">Muestre este código al operador para el registro.</p>
+                <button onclick="window.location.reload()"
+                    class="text-indigo-950 font-semibold text-sm hover:underline">
+                    Nuevo Registro
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 p-5 text-center border-t border-gray-100">
+            <p class="text-[11px] text-gray-400 tracking-wider">
+                &copy; 2026 Diseñado y Desarrollado por
+                <a href="https://hectorah.github.io/PORTAFOLIO/" target="_blank"
+                    class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200">
+                    Héctor Hernández
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('qrForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Get values and convert to uppercase
+            const cedula = document.getElementById('cedula').value.trim().toUpperCase();
+            const nombre = document.getElementById('nombre').value.trim().toUpperCase();
+            const depto = document.getElementById('departamento').value.trim().toUpperCase();
+
+            // Format: cedula|nombre|departamento
+            const qrData = `${cedula}|${nombre}|${depto}`;
+
+            // Clear previous QR if any
+            document.getElementById('qrcode').innerHTML = "";
+
+            // Generate QR
+            new QRCode(document.getElementById("qrcode"), {
+                text: qrData,
+                width: 200,
+                height: 200,
+                colorDark: "#1A237E",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // UI Transitions
+            document.getElementById('qrForm').classList.add('hidden');
+            document.getElementById('qrResult').classList.remove('hidden');
+        });
+    </script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</body>
+
+</html>
